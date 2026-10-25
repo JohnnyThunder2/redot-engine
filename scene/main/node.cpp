@@ -2030,8 +2030,8 @@ TypedArray<Node> Node::find_children(const String &p_pattern, const String &p_ty
 			}
 		}
 
-		// Save it if it matches the pattern and at least one type
-		if (is_pattern_match && (is_type_match || is_script_type_match)) {
+		// Save it if it matches the pattern and at least one type. The search starts at this node, but only descendants are returned.
+		if (entry != this && is_pattern_match && (is_type_match || is_script_type_match)) {
 			matches.append(entry);
 		}
 	}

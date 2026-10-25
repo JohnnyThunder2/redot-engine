@@ -372,6 +372,25 @@ TEST_CASE("[SceneTree][Node] Testing node operations with a more complex simple 
 		CHECK_EQ(Object::cast_to<Node>(children[1]), node1);
 	}
 
+	SUBCASE("find_children should only return descendants, never the node it is called on") {
+		node1->set_name("Node1");
+		node2->set_name("Node2");
+		node1_1->set_name("Node1_1");
+
+		// node1 matches the pattern itself, but only its child may be returned.
+		TypedArray<Node> children = node1->find_children("Node*", "", true, false);
+		CHECK_EQ(children.size(), 1);
+		CHECK_EQ(Object::cast_to<Node>(children[0]), node1_1);
+
+		children = node1->find_children("Node*", "Node", false, false);
+		CHECK_EQ(children.size(), 1);
+		CHECK_EQ(Object::cast_to<Node>(children[0]), node1_1);
+
+		// A leaf has no descendants, even though it matches its own pattern.
+		children = node1_1->find_children("Node*", "", true, false);
+		CHECK_EQ(children.size(), 0);
+	}
+
 	SUBCASE("Nodes should be accessible via their node path") {
 		Node *child_by_path = SceneTree::get_singleton()->get_root()->get_node_or_null(node1->get_path());
 		CHECK_EQ(child_by_path, node1);
